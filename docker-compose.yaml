@@ -1,0 +1,7 @@
+services:
+  app:
+    image: danielshemesh21/rocketil:v1
+    container_name: rocketil_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
