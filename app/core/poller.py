@@ -20,13 +20,17 @@ async def poll_loop() -> None:
             if raw_alerts:
                 alerts = process_alerts(raw_alerts)
 
-                for alert in alerts:
-                    store.upsert(alert)  # keep latest version in history
+                new_alerts = [a for a in alerts if store.upsert(a)]
+
+                for alert in new_alerts:
                     payload = json.dumps(alert.to_dict(), ensure_ascii=False)
                     await manager.broadcast(payload)
 
                 last_ts = int(max(a.timestamp.timestamp() * 1000 for a in alerts)) + 1
-                print(f"[poller] Sent {len(alerts)} alert(s) to {manager.count} client(s) | store size: {store.size}")
+                if new_alerts:
+                    print(f"[poller] Sent {len(new_alerts)} new alert(s) to {manager.count} client(s) | store size: {store.size}")
+                else:
+                    print(f"[poller] {len(alerts)} duplicate(s) skipped | store size: {store.size}")
 
         except asyncio.CancelledError:
             print("[poller] Stopped")

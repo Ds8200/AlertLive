@@ -27,15 +27,19 @@ class AlertStore:
     # Write                                                                #
     # ------------------------------------------------------------------ #
 
-    def upsert(self, alert: Alert) -> None:
+    def upsert(self, alert: Alert) -> bool:
         """
         Insert or replace an alert.
-        Replacement happens only when the incoming alert is **newer**,
-        so out-of-order deliveries never overwrite fresher data.
+        Replacement happens only when the incoming alert is **strictly newer**,
+        so out-of-order or duplicate deliveries never overwrite fresher data.
+
+        Returns True if the alert was new or updated, False if it was a duplicate.
         """
         existing = self._store.get(alert.alert_id)
-        if existing is None or alert.timestamp >= existing.timestamp:
+        if existing is None or alert.timestamp > existing.timestamp:
             self._store[alert.alert_id] = alert
+            return True
+        return False
 
     # ------------------------------------------------------------------ #
     # Read                                                                 #

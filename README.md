@@ -1,4 +1,4 @@
-# 🚀 AlertLive — התרעות בזמן אמת
+# 🚨 AlertLive — התרעות בזמן אמת
 
 מערכת ניטור התרעות בזמן אמת מ-API של [rocketil.live](https://rocketil.live), המציגה נתונים על מפה אינטראקטיבית עם עדכונים חיים דרך WebSocket.
 
