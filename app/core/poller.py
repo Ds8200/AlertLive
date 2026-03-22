@@ -26,7 +26,13 @@ async def poll_loop() -> None:
                     payload = json.dumps(alert.to_dict(), ensure_ascii=False)
                     await manager.broadcast(payload)
 
-                last_ts = int(max(a.timestamp.timestamp() * 1000 for a in alerts)) + 1
+                # Use created_at (DB insertion time) as the cursor so that
+                # oref alerts with old event timestamps never push last_ts
+                # backwards and cause the poller to re-fetch historical data.
+                last_ts = int(max(
+                    (a.created_at or a.timestamp).timestamp() * 1000
+                    for a in alerts
+                )) + 1
                 if new_alerts:
                     print(f"[poller] Sent {len(new_alerts)} new alert(s) to {manager.count} client(s) | store size: {store.size}")
                 else:
