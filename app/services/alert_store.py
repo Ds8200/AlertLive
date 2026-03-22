@@ -35,9 +35,9 @@ class AlertStore:
 
         Returns True if the alert was new or updated, False if it was a duplicate.
         """
-        existing = self._store.get(alert.alert_id)
+        existing = self._store.get(alert.oref_city)
         if existing is None or alert.timestamp > existing.timestamp:
-            self._store[alert.alert_id] = alert
+            self._store[alert.oref_city] = alert
             return True
         return False
 
